@@ -1,0 +1,58 @@
+import { fetcher } from "@/shared/utils";
+import { CreateListDto, IList, UpdateListDto } from "./types";
+
+export const create = (accessToken: string, boardId: string, values: CreateListDto) => {
+	return fetcher<IList>(`/boards/${boardId}/lists`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${accessToken}`,
+		},
+		body: JSON.stringify(values),
+	});
+};
+
+export const findAll = (accessToken: string, boardId: string) => {
+	return fetcher<IList[]>(`/boards/${boardId}/lists`, {
+		method: "GET",
+		credentials: "include",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${accessToken}`,
+		},
+	});
+};
+
+export const findOne = (accessToken: string, boardId: string, id: string) => {
+	return fetcher<IList>(`/boards/${boardId}/lists/${id}`, {
+		method: "GET",
+		credentials: "include",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${accessToken}`,
+		},
+	});
+};
+
+export const update = (accessToken: string, boardId: string, id: string, values: UpdateListDto) => {
+	return fetcher<void>(`/boards/${boardId}/lists/${id}`, {
+		method: "PATCH",
+		credentials: "include",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${accessToken}`,
+		},
+		body: JSON.stringify(values),
+	});
+};
+
+export const remove = (accessToken: string, boardId: string, id: string) => {
+	return fetcher<void>(`/boards/${boardId}/lists/${id}`, {
+		method: "DELETE",
+		credentials: "include",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${accessToken}`,
+		},
+	});
+};
