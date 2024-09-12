@@ -1,7 +1,8 @@
 import { fetcher } from "@/shared/utils";
+import { IBoard } from "../boards";
 import { CreateMemberDto, IMember, UpdateMemberDto } from "./types";
 
-export const create = (accessToken: string, boardId: string, values: CreateMemberDto) => {
+export const create = (accessToken: string, boardId: IBoard["id"], values: CreateMemberDto) => {
 	return fetcher<IMember>(`/boards/${boardId}/members`, {
 		method: "POST",
 		headers: {
@@ -12,7 +13,7 @@ export const create = (accessToken: string, boardId: string, values: CreateMembe
 	});
 };
 
-export const findAll = (accessToken: string, boardId: string) => {
+export const findAll = (accessToken: string, boardId: IBoard["id"]) => {
 	return fetcher<IMember[]>(`/boards/${boardId}/members`, {
 		method: "GET",
 		credentials: "include",
@@ -23,7 +24,7 @@ export const findAll = (accessToken: string, boardId: string) => {
 	});
 };
 
-export const findOne = (accessToken: string, boardId: string, id: string) => {
+export const findOne = (accessToken: string, boardId: IBoard["id"], id: IMember["id"]) => {
 	return fetcher<IMember>(`/boards/${boardId}/members/${id}`, {
 		method: "GET",
 		credentials: "include",
@@ -34,7 +35,7 @@ export const findOne = (accessToken: string, boardId: string, id: string) => {
 	});
 };
 
-export const update = (accessToken: string, boardId: string, id: string, values: UpdateMemberDto) => {
+export const update = (accessToken: string, boardId: IBoard["id"], id: IMember["id"], values: UpdateMemberDto) => {
 	return fetcher<void>(`/boards/${boardId}/members/${id}`, {
 		method: "PATCH",
 		credentials: "include",
@@ -46,7 +47,7 @@ export const update = (accessToken: string, boardId: string, id: string, values:
 	});
 };
 
-export const remove = (accessToken: string, boardId: string, id: string) => {
+export const remove = (accessToken: string, boardId: IBoard["id"], id: IMember["id"]) => {
 	return fetcher<void>(`/boards/${boardId}/members/${id}`, {
 		method: "DELETE",
 		credentials: "include",

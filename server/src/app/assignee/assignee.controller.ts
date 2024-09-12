@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  // Patch,
   Param,
   Delete,
   UseGuards,
@@ -12,10 +11,9 @@ import {
 import { BoardAuth } from "../board/decorators/board-auth.decorator";
 import { MemberRole } from "../member/enums/member.enum";
 import { CardValidateGuard } from "../card/guards/card-validate.guard";
+import { ListValidateGuard } from "../list/guards/list-validate.guard";
 import { AssigneeService } from "./assignee.service";
 import { CreateAssigneeDto } from "./dto/create-assignee.dto";
-import { ListValidateGuard } from "../list/guards/list-validate.guard";
-// import { UpdateAssigneeDto } from "./dto/update-assignee.dto";
 
 @Controller()
 export class AssigneeController {
@@ -30,9 +28,7 @@ export class AssigneeController {
     @Param("cardId", ParseIntPipe) cardId: number,
     @Body() createAssigneeDto: CreateAssigneeDto,
   ) {
-    await this.assigneeService.create(boardId, cardId, createAssigneeDto);
-
-    return { message: "Assignees added successfully" };
+    return this.assigneeService.create(boardId, cardId, createAssigneeDto);
   }
 
   @Get()
@@ -54,20 +50,6 @@ export class AssigneeController {
     return this.assigneeService.findOne(cardId, id);
   }
 
-  // @Patch()
-  // @UseGuards(CardValidateGuard)
-  // @UseGuards(ListValidateGuard)
-  // @BoardAuth([MemberRole.ProjectManager], "boardId")
-  // async update(
-  //   @Param("boardId", ParseIntPipe) boardId: number,
-  //   @Param("cardId", ParseIntPipe) cardId: number,
-  //   @Body() updateAssigneeDto: UpdateAssigneeDto,
-  // ) {
-  //   await this.assigneeService.update(boardId, cardId, updateAssigneeDto);
-
-  //   return { message: "Assignee/s updated successfully" };
-  // }
-
   @Delete(":id")
   @UseGuards(CardValidateGuard)
   @UseGuards(ListValidateGuard)
@@ -78,6 +60,6 @@ export class AssigneeController {
   ) {
     await this.assigneeService.remove(cardId, id);
 
-    return { message: "Assignee/s removed successfully" };
+    return { message: "Assignee removed successfully" };
   }
 }

@@ -23,7 +23,7 @@ export const findAll = (accessToken: string) => {
 	});
 };
 
-export const findOne = (accessToken: string, id: string) => {
+export const findOne = (accessToken: string, id: IBoard["id"]) => {
 	return fetcher<IBoard>(`/boards/${id}`, {
 		method: "GET",
 		credentials: "include",
@@ -36,7 +36,7 @@ export const findOne = (accessToken: string, id: string) => {
 
 export const update = (
 	accessToken: string,
-	id: number,
+	id: IBoard["id"],
 	values: { name: string; description: string; dueDate: string },
 ) => {
 	return fetcher<void>(`/boards/${id}`, {
@@ -50,7 +50,7 @@ export const update = (
 	});
 };
 
-export const remove = (accessToken: string, id: number) => {
+export const remove = (accessToken: string, id: IBoard["id"]) => {
 	return fetcher<void>(`/boards/${id}`, {
 		method: "DELETE",
 		credentials: "include",

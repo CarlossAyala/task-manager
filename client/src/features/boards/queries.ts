@@ -1,3 +1,4 @@
+import { useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../auth";
 import { create, findAll, findOne } from "./api";
@@ -6,7 +7,7 @@ import type { IBoard, CreateBoardDto } from "./types";
 export const boardKeys = {
 	key: () => ["boards"],
 	findAll: () => [...boardKeys.key(), "find-all"],
-	findOne: (id: string) => [...boardKeys.key(), "find-one", id],
+	findOne: (id: IBoard["id"]) => [...boardKeys.key(), "find-one", id],
 };
 
 export const useGetBoards = () => {
@@ -18,12 +19,13 @@ export const useGetBoards = () => {
 	});
 };
 
-export const useGetBoard = (id: string) => {
+export const useGetBoard = () => {
+	const { boardId } = useParams();
 	const { accessToken } = useAuth();
 
 	return useQuery({
-		queryKey: boardKeys.findOne(id),
-		queryFn: () => findOne(accessToken!, id),
+		queryKey: boardKeys.findOne(+boardId!),
+		queryFn: () => findOne(accessToken!, +boardId!),
 	});
 };
 
@@ -42,8 +44,8 @@ export const useCreateBoard = () => {
 	return useMutation({
 		mutationFn: (values: CreateBoardDto) => create(accessToken!, values),
 		onSuccess: (board) => {
-			queryClient.setQueryData(boardKeys.findOne(String(board.id)), board);
-			queryClient.setQueryData(boardKeys.findAll(), (oldData: IBoard[] | undefined) => {
+			queryClient.setQueryData(boardKeys.findOne(board.id), board);
+			queryClient.setQueryData<IBoard[]>(boardKeys.findAll(), (oldData) => {
 				if (!oldData) {
 					return [board];
 				}

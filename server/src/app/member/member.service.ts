@@ -111,6 +111,18 @@ export class MemberService {
     }
   }
 
+  async checkBoardMember(boardId: number, memberId: number): Promise<Member> {
+    const member = await this.memberRepository.findOneBy({
+      boardId,
+      id: memberId,
+    });
+    if (!member) {
+      throw new BadRequestException("Member not found");
+    }
+
+    return member;
+  }
+
   async checkBoardMembers(
     boardId: number,
     membersIds: number[],

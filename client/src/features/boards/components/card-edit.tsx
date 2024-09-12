@@ -1,9 +1,13 @@
 import { PropsWithChildren, useState } from "react";
 import { Button, Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/shared/ui";
-import { ICardFull } from "@/features/cards";
+import { ICard } from "@/features/cards";
+import { IList } from "@/features/lists";
 import { CardBaseForm } from "./card-base-form";
+import { CardAssignees } from "./card-assignees";
+import { CardChecklist } from "./card-checklist";
+import { CardLabels } from "./card-labels";
 
-type CardEditFormProps = PropsWithChildren<{ listId: string; card: ICardFull }>;
+type CardEditFormProps = PropsWithChildren<{ listId: IList["id"]; card: ICard }>;
 
 export const CardEdit = ({ listId, card, children }: CardEditFormProps) => {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -22,6 +26,9 @@ export const CardEdit = ({ listId, card, children }: CardEditFormProps) => {
 				</SheetHeader>
 
 				<CardBaseForm listId={listId} card={card} />
+				<CardAssignees listId={listId} cardId={card.id} />
+				<CardLabels listId={listId} cardId={card.id} />
+				<CardChecklist listId={listId} cardId={card.id} />
 			</SheetContent>
 		</Sheet>
 	);

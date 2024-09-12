@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { checklistsSchema } from "../checklists";
 
 export const cardSchema = z.object({
 	title: z.string().min(1).max(60),
@@ -15,18 +16,7 @@ export const labelSchema = z.object({
 	labels: z.array(z.number()).default([]),
 });
 
-export const checklistSchema = z.object({
-	checklists: z
-		.array(
-			z.object({
-				name: z.string().min(1).max(255),
-				description: z.string().max(255).optional(),
-			}),
-		)
-		.default([]),
-});
-
-export const createCardSchema = cardSchema.and(assignSchema).and(labelSchema).and(checklistSchema);
+export const createCardSchema = cardSchema.and(assignSchema).and(labelSchema).and(checklistsSchema);
 export const createCardDefaultValues = createCardSchema.safeParse({
 	title: "New Task",
 	description: "My task description",

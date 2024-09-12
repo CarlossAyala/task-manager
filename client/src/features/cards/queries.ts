@@ -2,30 +2,31 @@ import { useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../auth";
 import { create, findAll, findOne, remove, update } from "./api";
-import { CreateCardDto, UpdateCardDto } from "./types";
+import { CreateCardDto, ICard, UpdateCardBaseDto } from "./types";
+import { IBoard } from "../boards";
+import { IList } from "../lists";
 
 export const cardKeys = {
 	key: () => ["cards"],
-	findAll: ({ boardId, listId }: { boardId: string; listId: string }) => [
+	findAll: ({ boardId, listId }: { boardId: IBoard["id"]; listId?: IList["id"] }) => [
 		...cardKeys.key(),
 		"find-all",
-		boardId,
-		listId,
+		{ boardId, listId },
 	],
-	findOne: (id: string) => [...cardKeys.key(), "find-one", id],
+	findOne: (id: ICard["id"]) => [...cardKeys.key(), "find-one", id],
 };
 
-export const useGetCards = (listId: string) => {
+export const useGetCards = (listId: IList["id"]) => {
 	const { accessToken } = useAuth();
 	const { boardId } = useParams();
 
 	return useQuery({
-		queryKey: cardKeys.findAll({ boardId: boardId!, listId }),
-		queryFn: () => findAll(accessToken!, { boardId: boardId!, listId }),
+		queryKey: cardKeys.findAll({ boardId: +boardId!, listId }),
+		queryFn: () => findAll(accessToken!, { boardId: +boardId!, listId }),
 	});
 };
 
-export const useGetCard = ({ listId, cardId }: { listId: string; cardId: string }) => {
+export const useGetCard = ({ listId, cardId }: { listId: IList["id"]; cardId: ICard["id"] }) => {
 	const { accessToken } = useAuth();
 	const { boardId } = useParams();
 
@@ -35,7 +36,7 @@ export const useGetCard = ({ listId, cardId }: { listId: string; cardId: string 
 			findOne(
 				accessToken!,
 				{
-					boardId: boardId!,
+					boardId: +boardId!,
 					listId,
 				},
 				cardId,
@@ -49,11 +50,11 @@ export const useUpdateCard = () => {
 	const { boardId } = useParams();
 
 	return useMutation({
-		mutationFn: ({ listId, cardId, values }: { listId: string; cardId: string; values: UpdateCardDto }) =>
+		mutationFn: ({ listId, cardId, values }: { listId: IList["id"]; cardId: ICard["id"]; values: UpdateCardBaseDto }) =>
 			update(
 				accessToken!,
 				{
-					boardId: boardId!,
+					boardId: +boardId!,
 					listId,
 				},
 				cardId,
@@ -62,7 +63,7 @@ export const useUpdateCard = () => {
 		onSuccess: (_, { listId, cardId }) => {
 			return Promise.all([
 				queryClient.invalidateQueries({
-					queryKey: cardKeys.findAll({ boardId: boardId!, listId }),
+					queryKey: cardKeys.findAll({ boardId: +boardId!, listId }),
 				}),
 				queryClient.invalidateQueries({
 					queryKey: cardKeys.findOne(cardId),
@@ -81,12 +82,12 @@ export const useRemoveCard = () => {
 	const { boardId } = useParams();
 
 	return useMutation({
-		mutationFn: ({ listId, cardId }: { listId: string; cardId: string }) =>
-			remove(accessToken!, { boardId: boardId!, listId }, cardId),
+		mutationFn: ({ listId, cardId }: { listId: IList["id"]; cardId: ICard["id"] }) =>
+			remove(accessToken!, { boardId: +boardId!, listId }, cardId),
 		onSuccess: (_, { listId, cardId }) => {
 			return Promise.all([
 				queryClient.invalidateQueries({
-					queryKey: cardKeys.findAll({ boardId: boardId!, listId }),
+					queryKey: cardKeys.findAll({ boardId: +boardId!, listId }),
 				}),
 				queryClient.invalidateQueries({
 					queryKey: cardKeys.findOne(cardId),
@@ -105,14 +106,14 @@ export const useCreateCard = () => {
 	const { boardId } = useParams();
 
 	return useMutation({
-		mutationFn: ({ listId, values }: { listId: string; values: CreateCardDto }) =>
-			create(accessToken!, { boardId: boardId!, listId }, values),
+		mutationFn: ({ listId, values }: { listId: IList["id"]; values: CreateCardDto }) =>
+			create(accessToken!, { boardId: +boardId!, listId }, values),
 		onSuccess: (list, { listId }) => {
 			return Promise.all([
 				queryClient.invalidateQueries({
-					queryKey: cardKeys.findAll({ boardId: boardId!, listId }),
+					queryKey: cardKeys.findAll({ boardId: +boardId!, listId }),
 				}),
-				queryClient.setQueryData(cardKeys.findOne(String(list.id)), list),
+				queryClient.setQueryData(cardKeys.findOne(list.id), list),
 			]);
 		},
 		meta: {

@@ -1,7 +1,8 @@
 import { fetcher } from "@/shared/utils";
+import { IBoard } from "../boards";
 import { CreateListDto, IList, UpdateListDto } from "./types";
 
-export const create = (accessToken: string, boardId: string, values: CreateListDto) => {
+export const create = (accessToken: string, boardId: IBoard["id"], values: CreateListDto) => {
 	return fetcher<IList>(`/boards/${boardId}/lists`, {
 		method: "POST",
 		headers: {
@@ -12,7 +13,7 @@ export const create = (accessToken: string, boardId: string, values: CreateListD
 	});
 };
 
-export const findAll = (accessToken: string, boardId: string) => {
+export const findAll = (accessToken: string, boardId: IBoard["id"]) => {
 	return fetcher<IList[]>(`/boards/${boardId}/lists`, {
 		method: "GET",
 		credentials: "include",
@@ -23,7 +24,7 @@ export const findAll = (accessToken: string, boardId: string) => {
 	});
 };
 
-export const findOne = (accessToken: string, boardId: string, id: string) => {
+export const findOne = (accessToken: string, boardId: IBoard["id"], id: IList["id"]) => {
 	return fetcher<IList>(`/boards/${boardId}/lists/${id}`, {
 		method: "GET",
 		credentials: "include",
@@ -34,7 +35,7 @@ export const findOne = (accessToken: string, boardId: string, id: string) => {
 	});
 };
 
-export const update = (accessToken: string, boardId: string, id: string, values: UpdateListDto) => {
+export const update = (accessToken: string, boardId: IBoard["id"], id: IList["id"], values: UpdateListDto) => {
 	return fetcher<void>(`/boards/${boardId}/lists/${id}`, {
 		method: "PATCH",
 		credentials: "include",
@@ -46,7 +47,7 @@ export const update = (accessToken: string, boardId: string, id: string, values:
 	});
 };
 
-export const remove = (accessToken: string, boardId: string, id: string) => {
+export const remove = (accessToken: string, boardId: IList["id"], id: IList["id"]) => {
 	return fetcher<void>(`/boards/${boardId}/lists/${id}`, {
 		method: "DELETE",
 		credentials: "include",

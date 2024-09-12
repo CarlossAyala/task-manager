@@ -1,10 +1,11 @@
 import { Fragment } from "react/jsx-runtime";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui";
 import { BoardTab } from "../components/board-tab";
 import { ListTab } from "../components/list-tab";
 import { CalendarTab } from "../components/calendar-tab";
 import { useGetBoard } from "../queries";
+import { BoardMenu } from "../components/board-menu";
 
 const TAB_KEY = "tab";
 const TABS_OPTIONS = [
@@ -29,9 +30,8 @@ const TABS_VALUES = [
 ];
 
 export const Board = () => {
-	const { boardId } = useParams();
 	const [searchParams, setSearchParams] = useSearchParams();
-	const { data: board, error, isPending, isError } = useGetBoard(boardId!);
+	const { data: board, error, isPending, isError } = useGetBoard();
 
 	const getTab = (tab: string | null) => {
 		if (!tab) {
@@ -59,13 +59,17 @@ export const Board = () => {
 				</section>
 			) : (
 				<>
-					<section>
-						<h1 className="text-3xl font-medium">{board.name}</h1>
-						<p className="text-muted-foreground">{board.description}</p>
+					<section className="flex justify-between gap-2">
+						<div>
+							<h1 className="text-3xl font-semibold">{board.name}</h1>
+						</div>
+						<div className="flex gap-2">
+							<BoardMenu />
+						</div>
 					</section>
 
-					<Tabs value={tab.value} onValueChange={setTab} className="">
-						<TabsList>
+					<Tabs value={tab.value} onValueChange={setTab} className="flex flex-1 flex-col justify-start">
+						<TabsList className="flex w-fit justify-start">
 							{TABS_OPTIONS.map((t) => (
 								<TabsTrigger key={t.value} value={t.value}>
 									{t.label}
@@ -73,7 +77,7 @@ export const Board = () => {
 							))}
 						</TabsList>
 						{TABS_VALUES.map((t) => (
-							<TabsContent key={t.value} value={t.value} className="mt-4">
+							<TabsContent key={t.value} value={t.value} className="mt-5 flex-1">
 								{t.content}
 							</TabsContent>
 						))}

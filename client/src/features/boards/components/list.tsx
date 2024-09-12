@@ -8,7 +8,7 @@ import { Card } from "./card";
 
 // TODO: Add card order to cards
 export const List = ({ list }: { list: IList }) => {
-	const { data: cards, error, isPending, isError } = useGetCards(String(list.id));
+	const { data: cards, error, isPending, isError } = useGetCards(list.id);
 
 	const bg = getBgColor(list.color);
 
@@ -29,12 +29,14 @@ export const List = ({ list }: { list: IList }) => {
 			) : isError ? (
 				<div>Error: {error.message}</div>
 			) : cards.length === 0 ? (
-				<div className="text-center text-sm text-muted-foreground">No cards here.</div>
+				<div className="grid h-full place-content-center p-3 text-center text-sm text-muted-foreground">
+					No cards here.
+				</div>
 			) : (
-				<ol className="flex flex-col gap-2 overflow-y-auto overflow-x-hidden p-3">
+				<ol className="flex h-full flex-col gap-2 overflow-y-auto overflow-x-hidden p-3">
 					{cards.map((card) => (
 						<li key={card.id}>
-							<Card key={card.id} listId={String(list.id)} card={card} />
+							<Card key={card.id} listId={list.id} card={card} />
 						</li>
 					))}
 				</ol>

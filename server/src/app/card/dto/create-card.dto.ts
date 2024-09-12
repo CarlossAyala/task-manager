@@ -44,7 +44,7 @@ export class CreateCardDto {
   })
   @IsOptional()
   @Type(() => Checklist)
-  checklists?: Checklist[];
+  checklists: Checklist[];
 
   @IsDateString()
   @IsOptional()

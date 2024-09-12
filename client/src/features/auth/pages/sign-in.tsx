@@ -85,7 +85,7 @@ export const SignIn = () => {
 			</Form>
 			<div className="text-center text-sm">
 				Don&apos;t have an account?{" "}
-				<Link to="/sign-up" className={buttonVariants({ variant: "link", size: "link" })}>
+				<Link to="/signup" className={buttonVariants({ variant: "link", size: "flat" })}>
 					Sign up
 				</Link>
 			</div>

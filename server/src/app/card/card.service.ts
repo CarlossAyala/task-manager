@@ -73,11 +73,6 @@ export class CardService {
   findAll(listId: number, { skip, take }: PaginationOptions): Promise<Card[]> {
     return this.cardRepository.find({
       where: { listId },
-      relations: {
-        assignees: true,
-        labels: true,
-        checklists: true,
-      },
       skip,
       take,
     });

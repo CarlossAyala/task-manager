@@ -23,7 +23,7 @@ import {
 	Textarea,
 } from "@/shared/ui";
 import { createListDefaultValues, CreateListDto, createListSchema, useCreateList } from "@/features/lists";
-import { COLOR_NAMES, getBgColor } from "@/shared/tailwind";
+import { COLORS_NAME, getBgColor } from "@/shared/tailwind";
 import { cn } from "@/shared/utils";
 import { Spinner } from "@/shared/components";
 
@@ -99,8 +99,8 @@ export const ListCreate = () => {
 												defaultValue={field.value}
 												className="flex flex-wrap gap-2"
 											>
-												{Object.keys(COLOR_NAMES).map((_color) => {
-													const bg = getBgColor(_color as keyof typeof COLOR_NAMES);
+												{Object.keys(COLORS_NAME).map((_color) => {
+													const bg = getBgColor(_color as keyof typeof COLORS_NAME);
 
 													const isActive = color === _color;
 

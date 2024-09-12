@@ -8,7 +8,6 @@ import { DataSource, Repository } from "typeorm";
 import { MemberService } from "../member/member.service";
 import { Assignee } from "./entities/assignee.entity";
 import { CreateAssigneeDto } from "./dto/create-assignee.dto";
-// import { UpdateAssigneeDto } from "./dto/update-assignee.dto";
 
 @Injectable()
 export class AssigneeService {
@@ -22,27 +21,19 @@ export class AssigneeService {
   async create(
     boardId: number,
     cardId: number,
-    { members }: CreateAssigneeDto,
-  ): Promise<void> {
-    await this.memberService.checkBoardMembers(boardId, members);
+    { memberId }: CreateAssigneeDto,
+  ): Promise<Assignee> {
+    await this.memberService.checkBoardMember(boardId, memberId);
 
-    const assignees = await this.findByCardId(cardId);
-    const alreadyAssigned = assignees
-      .filter((assignee) => members.includes(assignee.memberId))
-      .map((assignee) => assignee.memberId);
-
-    if (alreadyAssigned.length > 0) {
-      throw new BadRequestException(
-        "Member/s already assigned to this card: " + alreadyAssigned.join(", "),
-      );
+    const assignees = await this.findAllByCardId(cardId);
+    if (assignees.find((assignee) => assignee.memberId === memberId)) {
+      throw new BadRequestException("Member already assigned to this card");
     }
 
-    await this.assigneeRepository.insert(
-      members.map((memberId) => ({
-        cardId,
-        memberId,
-      })),
-    );
+    return this.assigneeRepository.save({
+      cardId,
+      memberId,
+    });
   }
 
   findAll(cardId: number): Promise<Assignee[]> {
@@ -55,42 +46,13 @@ export class AssigneeService {
     return this.findByCardIdAndId(cardId, id);
   }
 
-  // async update(
-  //   boardId: number,
-  //   cardId: number,
-  //   { members }: UpdateAssigneeDto,
-  // ): Promise<void> {
-  //   await this.memberService.checkBoardMembers(boardId, members);
-  //   const assignees = await this.findByCardId(cardId);
-
-  //   await this.dataSource.transaction(async (manager) => {
-  // 		const assigneesToRemove = assignees.filter
-  // 	});
-
-  // const assigneesToRemove = assignees.filter(
-  //   (assignee) => !usersIds.includes(assignee.userId),
-  // );
-  // await this.assigneeRepository.remove(assigneesToRemove);
-
-  // const assigneesToAdd = usersIds.filter(
-  //   (userId) => !assignees.find((assignee) => assignee.userId === userId),
-  // );
-
-  // await this.assigneeRepository.insert(
-  //   assigneesToAdd.map((userId) => ({
-  //     cardId,
-  //     userId,
-  //   })),
-  // );
-  // }
-
   async remove(cardId: number, id: number): Promise<void> {
     await this.findByCardIdAndId(cardId, id);
 
     await this.assigneeRepository.delete(id);
   }
 
-  findByCardId(cardId: number): Promise<Assignee[]> {
+  findAllByCardId(cardId: number): Promise<Assignee[]> {
     return this.assigneeRepository.findBy({
       cardId,
     });

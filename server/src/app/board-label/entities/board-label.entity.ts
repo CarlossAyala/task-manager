@@ -21,11 +21,6 @@ export class BoardLabel {
   name: string;
 
   @Column({
-    nullable: true,
-  })
-  description: string;
-
-  @Column({
     type: "enum",
     enum: Colors,
   })

@@ -1,9 +1,11 @@
 import { fetcher } from "@/shared/utils";
-import { CreateCardDto, ICardFull, UpdateCardDto } from "./types";
+import { CreateCardDto, ICard, ICardFull, UpdateCardBaseDto } from "./types";
+import { IBoard } from "../boards";
+import { IList } from "../lists";
 
 export const create = (
 	accessToken: string,
-	{ boardId, listId }: { boardId: string; listId: string },
+	{ boardId, listId }: { boardId: IBoard["id"]; listId: IList["id"] },
 	values: CreateCardDto,
 ) => {
 	return fetcher<ICardFull>(`/boards/${boardId}/lists/${listId}/cards`, {
@@ -22,11 +24,11 @@ export const findAll = (
 		boardId,
 		listId,
 	}: {
-		boardId: string;
-		listId: string;
+		boardId: IBoard["id"];
+		listId: IList["id"];
 	},
 ) => {
-	return fetcher<ICardFull[]>(`/boards/${boardId}/lists/${listId}/cards`, {
+	return fetcher<ICard[]>(`/boards/${boardId}/lists/${listId}/cards`, {
 		method: "GET",
 		credentials: "include",
 		headers: {
@@ -42,12 +44,12 @@ export const findOne = (
 		boardId,
 		listId,
 	}: {
-		boardId: string;
-		listId: string;
+		boardId: IBoard["id"];
+		listId: IList["id"];
 	},
-	id: string,
+	id: ICard["id"],
 ) => {
-	return fetcher<ICardFull>(`/boards/${boardId}/lists/${listId}/cards/${id}`, {
+	return fetcher<ICard>(`/boards/${boardId}/lists/${listId}/cards/${id}`, {
 		method: "GET",
 		credentials: "include",
 		headers: {
@@ -63,11 +65,11 @@ export const update = (
 		boardId,
 		listId,
 	}: {
-		boardId: string;
-		listId: string;
+		boardId: IBoard["id"];
+		listId: IList["id"];
 	},
-	id: string,
-	values: UpdateCardDto,
+	id: ICard["id"],
+	values: UpdateCardBaseDto,
 ) => {
 	return fetcher<void>(`/boards/${boardId}/lists/${listId}/cards/${id}`, {
 		method: "PATCH",
@@ -86,10 +88,10 @@ export const remove = (
 		boardId,
 		listId,
 	}: {
-		boardId: string;
-		listId: string;
+		boardId: IBoard["id"];
+		listId: IList["id"];
 	},
-	id: string,
+	id: ICard["id"],
 ) => {
 	return fetcher<void>(`/boards/${boardId}/lists/${listId}/cards/${id}`, {
 		method: "DELETE",

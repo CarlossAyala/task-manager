@@ -1,13 +1,14 @@
 import { useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../auth";
+import { IBoard } from "../boards";
 import { create, findAll, findOne, remove, update } from "./api";
-import { CreateMemberDto, UpdateMemberDto } from "./types";
+import { CreateMemberDto, IMember, UpdateMemberDto } from "./types";
 
 export const memberKeys = {
 	key: () => ["members"],
-	findAll: (boardId: string) => [...memberKeys.key(), "find-all", boardId],
-	findOne: (id: string) => [...memberKeys.key(), "find-one", id],
+	findAll: (boardId: IBoard["id"]) => [...memberKeys.key(), "find-all", boardId],
+	findOne: (id: IMember["id"]) => [...memberKeys.key(), "find-one", id],
 };
 
 export const useGetMembers = () => {
@@ -15,18 +16,18 @@ export const useGetMembers = () => {
 	const { boardId } = useParams();
 
 	return useQuery({
-		queryKey: memberKeys.findAll(boardId!),
-		queryFn: () => findAll(accessToken!, boardId!),
+		queryKey: memberKeys.findAll(+boardId!),
+		queryFn: () => findAll(accessToken!, +boardId!),
 	});
 };
 
-export const useGetMember = (memberId: string) => {
+export const useGetMember = (memberId: IMember["id"]) => {
 	const { accessToken } = useAuth();
 	const { boardId } = useParams();
 
 	return useQuery({
 		queryKey: memberKeys.findOne(memberId),
-		queryFn: () => findOne(accessToken!, boardId!, memberId),
+		queryFn: () => findOne(accessToken!, +boardId!, memberId),
 	});
 };
 
@@ -36,12 +37,12 @@ export const useUpdateMember = () => {
 	const { boardId } = useParams();
 
 	return useMutation({
-		mutationFn: ({ memberId, values }: { memberId: string; values: UpdateMemberDto }) =>
-			update(accessToken!, boardId!, memberId, values),
+		mutationFn: ({ memberId, values }: { memberId: IMember["id"]; values: UpdateMemberDto }) =>
+			update(accessToken!, +boardId!, memberId, values),
 		onSuccess: (_, { memberId }) => {
 			return Promise.all([
 				queryClient.invalidateQueries({
-					queryKey: memberKeys.findAll(boardId!),
+					queryKey: memberKeys.findAll(+boardId!),
 				}),
 				queryClient.invalidateQueries({
 					queryKey: memberKeys.findOne(memberId),
@@ -60,11 +61,11 @@ export const useRemoveMember = () => {
 	const { boardId } = useParams();
 
 	return useMutation({
-		mutationFn: (memberId: string) => remove(accessToken!, boardId!, memberId),
+		mutationFn: (memberId: IMember["id"]) => remove(accessToken!, +boardId!, memberId),
 		onSuccess: (_, memberId) => {
 			return Promise.all([
 				queryClient.invalidateQueries({
-					queryKey: memberKeys.findAll(boardId!),
+					queryKey: memberKeys.findAll(+boardId!),
 				}),
 				queryClient.invalidateQueries({
 					queryKey: memberKeys.findOne(memberId),
@@ -83,13 +84,13 @@ export const useCreateMember = () => {
 	const { boardId } = useParams();
 
 	return useMutation({
-		mutationFn: (values: CreateMemberDto) => create(accessToken!, boardId!, values),
+		mutationFn: (values: CreateMemberDto) => create(accessToken!, +boardId!, values),
 		onSuccess: (member) => {
 			return Promise.all([
 				queryClient.invalidateQueries({
-					queryKey: memberKeys.findAll(boardId!),
+					queryKey: memberKeys.findAll(+boardId!),
 				}),
-				queryClient.setQueryData(memberKeys.findOne(String(member.id)), member),
+				queryClient.setQueryData(memberKeys.findOne(member.id), member),
 			]);
 		},
 		meta: {

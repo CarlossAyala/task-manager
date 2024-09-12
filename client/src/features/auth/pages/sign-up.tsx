@@ -106,7 +106,7 @@ export const SignUp = () => {
 
 				<div className="text-center text-sm">
 					Already have an account?{" "}
-					<Link to="/sign-in" className={buttonVariants({ variant: "link", size: "link" })}>
+					<Link to="/signin" className={buttonVariants({ variant: "link", size: "flat" })}>
 						Sign in
 					</Link>
 				</div>

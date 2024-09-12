@@ -6,7 +6,7 @@ export const BoardTab = () => {
 	const { data: lists, error, isPending, isError } = useGetLists();
 
 	return (
-		<div className="flex gap-2">
+		<div className="flex h-full gap-2">
 			{isPending ? (
 				<div>Loading...</div>
 			) : isError ? (

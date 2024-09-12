@@ -1,24 +1,9 @@
 import { z } from "zod";
 import { Entity } from "@/shared/types";
+import { IAssignee } from "../assignees";
+import { IChecklist } from "../checklists";
+import { ICardLabel } from "../card-labels";
 import { cardSchema, createCardSchema } from "./schemas";
-
-export type IAssignee = Entity<{
-	cardId: number;
-	memberId: number;
-}>;
-
-export type ICardLabel = Entity<{
-	cardId: number;
-	labelId: number;
-}>;
-
-export type IChecklist = Entity<{
-	name: string;
-	description: string | null;
-	isChecked: boolean;
-	order: number;
-	cardId: number;
-}>;
 
 export type ICard = Entity<{
 	title: string;
@@ -36,4 +21,4 @@ export type ICardFull = Entity<
 
 export type CreateCardDto = z.infer<typeof createCardSchema>;
 
-export type UpdateCardDto = z.infer<typeof cardSchema>;
+export type UpdateCardBaseDto = z.infer<typeof cardSchema>;

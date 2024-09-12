@@ -1,15 +1,15 @@
-import { BG_COLORS, COLOR_NAMES, TEXT_COLORS } from "./tailwind.constants";
+import { BG_COLORS, COLORS_NAME, TEXT_COLORS } from "./tailwind.constants";
 
 export const getBgColor = (
-	name: keyof typeof COLOR_NAMES,
-	tone: keyof (typeof BG_COLORS)[(typeof COLOR_NAMES)[keyof typeof COLOR_NAMES]] = "600",
+	name: keyof typeof COLORS_NAME,
+	tone: keyof (typeof BG_COLORS)[(typeof COLORS_NAME)[keyof typeof COLORS_NAME]] = "600",
 ) => {
 	return BG_COLORS[name][tone];
 };
 
 export const getTextColor = (
-	name: keyof typeof COLOR_NAMES,
-	tone: keyof (typeof TEXT_COLORS)[(typeof COLOR_NAMES)[keyof typeof COLOR_NAMES]] = "900",
+	name: keyof typeof COLORS_NAME,
+	tone: keyof (typeof TEXT_COLORS)[(typeof COLORS_NAME)[keyof typeof COLORS_NAME]] = "900",
 ) => {
-	return COLOR_NAMES[name][tone];
+	return COLORS_NAME[name][tone];
 };

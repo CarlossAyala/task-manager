@@ -39,7 +39,7 @@ import {
 } from "@/shared/ui";
 import { Spinner } from "@/shared/components";
 import { IList, UpdateListDto, updateListSchema, useRemoveList, useUpdateList } from "@/features/lists";
-import { COLOR_NAMES, getBgColor } from "@/shared/tailwind";
+import { COLORS_NAME, getBgColor } from "@/shared/tailwind";
 import { cn } from "@/shared/utils";
 
 enum Modals {
@@ -177,8 +177,8 @@ export const ListActions = ({ list }: { list: IList }) => {
 										<FormLabel>Color</FormLabel>
 										<FormControl>
 											<RadioGroup onValueChange={field.onChange} value={field.value} className="flex flex-wrap gap-2">
-												{Object.keys(COLOR_NAMES).map((color) => {
-													const bg = getBgColor(color as keyof typeof COLOR_NAMES);
+												{Object.keys(COLORS_NAME).map((color) => {
+													const bg = getBgColor(color as keyof typeof COLORS_NAME);
 
 													const isActive = form.watch("color") === color;
 

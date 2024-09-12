@@ -3,12 +3,15 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { CheckIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import { IColorsName } from "@/shared/tailwind";
+import { cn } from "@/shared/utils";
 import {
 	Avatar,
 	AvatarFallback,
 	Badge,
 	Button,
 	Calendar,
+	Checkbox,
 	Command,
 	CommandEmpty,
 	CommandGroup,
@@ -41,27 +44,14 @@ import {
 	Textarea,
 } from "@/shared/ui";
 import { Spinner } from "@/shared/components";
-import { cn } from "@/shared/utils";
 import { useGetMembers } from "@/features/members";
 import { createCardDefaultValues, CreateCardDto, createCardSchema, useCreateCard } from "@/features/cards";
+import { useGetBoardLabels } from "@/features/board-labels";
 
 enum Modals {
 	Aside = "aside",
 	Assignees = "assignees",
 }
-
-const languages = [
-	{ id: 1, label: "English" },
-	{ id: 2, label: "French" },
-	{ id: 3, label: "German" },
-	{ id: 4, label: "Spanish" },
-	{ id: 5, label: "Portuguese" },
-	{ id: 6, label: "Russian" },
-	{ id: 7, label: "Japanese" },
-	{ id: 8, label: "Korean" },
-	{ id: 9, label: "Chinese" },
-	{ id: 10, label: "Arabic" },
-] as const;
 
 // TODO: Add attachments
 
@@ -80,6 +70,7 @@ export const CardCreate = ({ listId }: { listId: string }) => {
 
 	const { mutate, isPending } = useCreateCard();
 	const members = useGetMembers();
+	const labels = useGetBoardLabels();
 
 	const handleSubmit = (values: CreateCardDto) => {
 		mutate(
@@ -255,65 +246,96 @@ export const CardCreate = ({ listId }: { listId: string }) => {
 										<div className="grid gap-2">
 											{field.value.length > 0 ? (
 												<div className="flex flex-wrap gap-1">
-													{languages
-														.filter((l) => field.value.includes(l.id))
-														.map((l) => (
-															<button
-																key={l.id}
-																className="group"
-																onClick={() =>
-																	form.setValue(
-																		"labels",
-																		field.value.filter((labelId) => labelId !== l.id),
-																	)
-																}
-															>
-																<Badge variant="slate" className="relative group-hover:text-transparent">
-																	{l.label}
-																	<XMarkIcon className="absolute left-1/2 top-1/2 size-5 -translate-x-1/2 -translate-y-1/2 text-primary opacity-0 transition-opacity group-hover:opacity-100" />
-																</Badge>
-															</button>
+													{labels.data
+														?.filter((label) => field.value.includes(label.id))
+														.map((label) => (
+															<FormField
+																key={label.id}
+																control={form.control}
+																name="labels"
+																render={({ field }) => {
+																	return (
+																		<FormItem key={label.id}>
+																			<FormControl>
+																				<Checkbox
+																					checked={field.value.includes(label.id)}
+																					onCheckedChange={() => {
+																						field.onChange(field.value.filter((labelId) => labelId !== label.id));
+																					}}
+																					className="hidden"
+																				/>
+																			</FormControl>
+																			<FormLabel>
+																				<Badge variant={label.color as IColorsName} className="text-wrap">
+																					{label.name}
+																				</Badge>
+																			</FormLabel>
+																		</FormItem>
+																	);
+																}}
+															/>
 														))}
 												</div>
 											) : null}
 											<PopoverTrigger asChild>
 												<FormControl>
-													<Button variant="outline" size="icon" onClick={handleAddChecklist}>
+													<Button variant="outline" size="icon">
 														<PlusIcon className="size-4" />
 													</Button>
 												</FormControl>
 											</PopoverTrigger>
 										</div>
-										<PopoverContent className="mt-0 p-0" align="start" portal={false}>
-											<Command>
-												<CommandInput placeholder="Search labels..." />
-												<CommandList>
-													<CommandEmpty>No labels found.</CommandEmpty>
-													<CommandGroup>
-														{languages.map((l) => {
-															const isActive = field.value.includes(l.id);
-
-															return (
-																<CommandItem
-																	key={l.id}
-																	value={String(l.id)}
-																	onSelect={() => {
-																		form.setValue(
-																			"labels",
-																			isActive ? field.value.filter((id) => id !== l.id) : field.value.concat(l.id),
-																		);
-																	}}
-																>
-																	{l.label}
-																	<CheckIcon
-																		className={cn("ml-auto h-4 w-4", isActive ? "opacity-100" : "opacity-0")}
-																	/>
-																</CommandItem>
-															);
-														})}
-													</CommandGroup>
-												</CommandList>
-											</Command>
+										<PopoverContent className="mt-0 p-2" align="start" portal={false}>
+											{labels.isPending ? (
+												<div className="py-6">
+													<Spinner className="mx-auto size-5" />
+												</div>
+											) : labels.isError ? (
+												<div className="py-6 text-center text-sm">
+													<p>Error loading labels.</p>
+												</div>
+											) : labels.data.length === 0 ? (
+												<div className="py-6 text-center text-sm">
+													<p>No labels found. Create a new one to get started.</p>
+												</div>
+											) : labels.data.length > 0 &&
+											  labels.data.filter((label) => !field.value.includes(label.id)).length === 0 ? (
+												<div className="py-6 text-center text-sm">
+													<p>All labels selected.</p>
+												</div>
+											) : (
+												<div className="flex flex-wrap gap-1">
+													{labels.data
+														.filter((label) => !field.value.includes(label.id))
+														.map((label) => (
+															<FormField
+																key={label.id}
+																control={form.control}
+																name="labels"
+																render={({ field }) => {
+																	return (
+																		<FormItem key={label.id}>
+																			<FormControl>
+																				<Checkbox
+																					checked={field.value.includes(label.id)}
+																					onCheckedChange={() => {
+																						field.onChange([...field.value, label.id]);
+																					}}
+																					className="hidden"
+																				/>
+																			</FormControl>
+																			<FormLabel>
+																				<Badge variant={label.color as IColorsName} className="text-wrap">
+																					{label.name}
+																				</Badge>
+																			</FormLabel>
+																		</FormItem>
+																	);
+																}}
+															/>
+														))}
+												</div>
+											)}
 										</PopoverContent>
 									</Popover>
 									<FormMessage />
@@ -336,7 +358,7 @@ export const CardCreate = ({ listId }: { listId: string }) => {
 														<FormItem>
 															<FormLabel>Name</FormLabel>
 															<FormControl>
-																<Input placeholder="Checklist" {...field} />
+																<Input placeholder="Name" {...field} />
 															</FormControl>
 															<FormMessage />
 														</FormItem>
@@ -349,7 +371,7 @@ export const CardCreate = ({ listId }: { listId: string }) => {
 														<FormItem>
 															<FormLabel>Description</FormLabel>
 															<FormControl>
-																<Textarea placeholder="Checklist description" {...field} />
+																<Textarea placeholder="Description" {...field} />
 															</FormControl>
 															<FormMessage />
 														</FormItem>

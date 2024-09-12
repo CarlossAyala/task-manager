@@ -1,12 +1,12 @@
 import { z } from "zod";
 import { Entity } from "@/shared/types";
-import { COLOR_NAMES } from "@/shared/tailwind";
+import { COLORS_NAME } from "@/shared/tailwind";
 import { createListSchema } from "./schemas";
 
 export type IList = Entity<{
 	name: string;
 	description: string;
-	color: keyof typeof COLOR_NAMES;
+	color: keyof typeof COLORS_NAME;
 }>;
 
 export type CreateListDto = z.infer<typeof createListSchema>;

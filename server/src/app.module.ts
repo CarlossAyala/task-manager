@@ -11,7 +11,6 @@ import { AssigneeModule } from "./app/assignee/assignee.module";
 import { ListModule } from "./app/list/list.module";
 import { CommentModule } from "./app/comment/comment.module";
 import { ChecklistModule } from "./app/checklist/checklist.module";
-import { CoreLabelModule } from "./app/core-label/core-label.module";
 import { BoardLabelModule } from "./app/board-label/board-label.module";
 import { CardLabelModule } from "./app/card-label/card-label.module";
 import { validate } from "./config/config";
@@ -51,7 +50,6 @@ const ENV = process.env.NODE_ENV;
     AssigneeModule,
     CommentModule,
     ChecklistModule,
-    CoreLabelModule,
     BoardLabelModule,
     CardLabelModule,
     RouterModule.register([
@@ -100,10 +98,6 @@ const ENV = process.env.NODE_ENV;
             module: MemberModule,
           },
         ],
-      },
-      {
-        path: "core-labels",
-        module: CoreLabelModule,
       },
     ]),
   ],
