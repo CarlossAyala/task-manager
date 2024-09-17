@@ -1,16 +1,18 @@
 import { z } from "zod";
 
-export const checklistSchema = z.object({
+export const checklistInputsSchema = z.object({
 	name: z.string().min(1).max(255),
 	description: z.string().max(255).optional(),
 });
 
 export const checklistsSchema = z.object({
-	checklists: z.array(checklistSchema).default([]),
+	checklists: z.array(checklistInputsSchema).default([]),
 });
 
-export const updateChecklistSchema = z
-	.object({
-		isChecked: z.boolean(),
-	})
-	.and(checklistSchema);
+const checklistCheckboxSchema = z.object({
+	isChecked: z.boolean(),
+});
+
+export const updateChecklistSchema = checklistCheckboxSchema
+	.or(checklistInputsSchema)
+	.or(checklistInputsSchema.and(checklistCheckboxSchema));

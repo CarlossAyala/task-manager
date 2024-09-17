@@ -20,7 +20,7 @@ export const List = ({ list }: { list: IList }) => {
 					<h2 className="font-medium">{list.name}</h2>
 				</div>
 				<div className="-mr-2 flex shrink-0 gap-2">
-					<CardCreate listId={String(list.id)} />
+					<CardCreate listId={list.id} />
 					<ListActions list={list} />
 				</div>
 			</div>

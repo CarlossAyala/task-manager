@@ -15,17 +15,13 @@ import {
 	PopoverTrigger,
 } from "@/shared/ui";
 import { Spinner } from "@/shared/components";
-import { ICard } from "@/features/cards";
 import { IMember, useGetMembers } from "@/features/members";
 import { useCreateAssignee, useGetAssignees, useRemoveAssignee } from "@/features/assignees";
-import { IList } from "@/features/lists";
+import { useCard } from "../providers/card.provider";
 
-type Props = {
-	listId: IList["id"];
-	cardId: ICard["id"];
-};
+export const CardAssignees = () => {
+	const { listId, cardId } = useCard();
 
-export const CardAssignees = ({ listId, cardId }: Props) => {
 	const assignees = useGetAssignees({ listId, cardId });
 	const create = useCreateAssignee({ listId, cardId });
 	const remove = useRemoveAssignee({ listId, cardId });

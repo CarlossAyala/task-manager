@@ -12,6 +12,8 @@ const badgeVariants = cva(
 				destructive: "border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80",
 				outline: "text-foreground",
 
+				member: "shrink-0 border-secondary-foreground/60 bg-secondary text-secondary-foreground hover:bg-secondary/80",
+
 				slate: "border-slate-500 bg-slate-100 text-slate-800 shadow hover:bg-slate-200",
 				gray: "border-gray-500 bg-gray-100 text-gray-800 shadow hover:bg-gray-200",
 				zinc: "border-zinc-500 bg-zinc-100 text-zinc-800 shadow hover:bg-zinc-200",

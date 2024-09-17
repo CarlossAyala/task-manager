@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../auth";
@@ -19,11 +20,22 @@ export const cardKeys = {
 export const useGetCards = (listId: IList["id"]) => {
 	const { accessToken } = useAuth();
 	const { boardId } = useParams();
+	const queryClient = useQueryClient();
 
-	return useQuery({
+	const query = useQuery({
 		queryKey: cardKeys.findAll({ boardId: +boardId!, listId }),
 		queryFn: () => findAll(accessToken!, { boardId: +boardId!, listId }),
 	});
+
+	useEffect(() => {
+		if (query.isSuccess) {
+			for (const card of query.data) {
+				queryClient.setQueryData<ICard>(cardKeys.findOne(card.id), card);
+			}
+		}
+	}, [query.isSuccess, query.data, queryClient]);
+
+	return query;
 };
 
 export const useGetCard = ({ listId, cardId }: { listId: IList["id"]; cardId: ICard["id"] }) => {
@@ -85,14 +97,13 @@ export const useRemoveCard = () => {
 		mutationFn: ({ listId, cardId }: { listId: IList["id"]; cardId: ICard["id"] }) =>
 			remove(accessToken!, { boardId: +boardId!, listId }, cardId),
 		onSuccess: (_, { listId, cardId }) => {
-			return Promise.all([
-				queryClient.invalidateQueries({
-					queryKey: cardKeys.findAll({ boardId: +boardId!, listId }),
-				}),
-				queryClient.invalidateQueries({
-					queryKey: cardKeys.findOne(cardId),
-				}),
-			]);
+			queryClient.setQueryData<ICard[]>(cardKeys.findAll({ boardId: +boardId!, listId }), (old) => {
+				if (!old) return old;
+				return old.filter((c) => c.id !== cardId);
+			});
+			queryClient.removeQueries({
+				queryKey: cardKeys.findOne(cardId),
+			});
 		},
 		meta: {
 			title: "Remove card",
@@ -108,13 +119,14 @@ export const useCreateCard = () => {
 	return useMutation({
 		mutationFn: ({ listId, values }: { listId: IList["id"]; values: CreateCardDto }) =>
 			create(accessToken!, { boardId: +boardId!, listId }, values),
-		onSuccess: (list, { listId }) => {
-			return Promise.all([
-				queryClient.invalidateQueries({
-					queryKey: cardKeys.findAll({ boardId: +boardId!, listId }),
-				}),
-				queryClient.setQueryData(cardKeys.findOne(list.id), list),
-			]);
+		onSuccess: (card, { listId }) => {
+			queryClient.setQueryData<ICard[]>(cardKeys.findAll({ boardId: +boardId!, listId }), (old) => {
+				if (!old) return old;
+				// TODO: Re order cards base in his orders
+				return [...old, card];
+			});
+
+			queryClient.setQueryData<ICard>(cardKeys.findOne(card.id), card);
 		},
 		meta: {
 			title: "Create card",

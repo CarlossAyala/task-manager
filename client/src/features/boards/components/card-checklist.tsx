@@ -1,20 +1,18 @@
-import { ICard } from "@/features/cards";
-import { IList } from "@/features/lists";
 import { useGetChecklists } from "@/features/checklists";
+import { useCard } from "../providers/card.provider";
 import { CardChecklistCreateForm } from "./card-checklist-create-form";
-import { CardChecklistUpdateForm } from "./card-checklist-update-form";
+import { CardChecklistItem } from "./card-checklist-item";
 
-type Props = {
-	listId: IList["id"];
-	cardId: ICard["id"];
-};
-
-export const CardChecklist = ({ listId, cardId }: Props) => {
+export const CardChecklist = () => {
+	const { listId, cardId } = useCard();
 	const { data: checklists, isPending, isError } = useGetChecklists({ listId, cardId });
 
 	return (
 		<section className="grid gap-1.5">
-			<p className="text-sm font-medium leading-4">Checklists</p>
+			<div>
+				<p className="text-sm font-medium leading-4">Checklists</p>
+			</div>
+
 			{isPending ? (
 				<div>Loading...</div>
 			) : isError ? (
@@ -22,13 +20,13 @@ export const CardChecklist = ({ listId, cardId }: Props) => {
 			) : checklists.length > 0 ? (
 				<ol className="space-y-2">
 					{checklists.map((checklist) => (
-						<li key={checklist.id} className="border-l-4 pl-2">
-							<CardChecklistUpdateForm listId={listId} cardId={cardId} checklist={checklist} />
+						<li key={checklist.id} className="border-l-4">
+							<CardChecklistItem checklist={checklist} />
 						</li>
 					))}
 				</ol>
 			) : null}
-			<CardChecklistCreateForm listId={listId} cardId={cardId} />
+			<CardChecklistCreateForm />
 		</section>
 	);
 };

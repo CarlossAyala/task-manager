@@ -4,17 +4,13 @@ import { Button, Input, Label, Popover, PopoverContent, PopoverTrigger } from "@
 import { Spinner } from "@/shared/components";
 import { useGetBoardLabels } from "@/features/board-labels";
 import { useGetCardLabels } from "@/features/card-labels";
-import { ICard } from "@/features/cards";
-import { IList } from "@/features/lists";
+import { useCard } from "../providers/card.provider";
 import { CardLabelsCreate } from "./card-labels-create";
 import { CardLabelsRemove } from "./card-labels-remove";
 
-type Props = {
-	listId: IList["id"];
-	cardId: ICard["id"];
-};
+export const CardLabels = () => {
+	const { listId, cardId } = useCard();
 
-export const CardLabels = ({ listId, cardId }: Props) => {
 	const [search, setSearch] = useState("");
 	const labels = useGetBoardLabels();
 	const labelsId = useGetCardLabels({ listId, cardId });

@@ -47,6 +47,7 @@ import { Spinner } from "@/shared/components";
 import { useGetMembers } from "@/features/members";
 import { createCardDefaultValues, CreateCardDto, createCardSchema, useCreateCard } from "@/features/cards";
 import { useGetBoardLabels } from "@/features/board-labels";
+import { IList } from "@/features/lists";
 
 enum Modals {
 	Aside = "aside",
@@ -55,7 +56,7 @@ enum Modals {
 
 // TODO: Add attachments
 
-export const CardCreate = ({ listId }: { listId: string }) => {
+export const CardCreate = ({ listId }: { listId: IList["id"] }) => {
 	const [modals, setModals] = useState<Modals[]>([]);
 
 	const form = useForm<CreateCardDto>({

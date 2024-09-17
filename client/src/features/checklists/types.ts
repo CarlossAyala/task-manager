@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { Entity } from "@/shared/types";
-import { checklistSchema, checklistsSchema, updateChecklistSchema } from "./schemas";
+import { checklistInputsSchema, checklistsSchema, updateChecklistSchema } from "./schemas";
 
 export type IChecklist = Entity<{
 	name: string;
@@ -10,6 +10,6 @@ export type IChecklist = Entity<{
 	cardId: number;
 }>;
 
-export type ChecklistDto = z.infer<typeof checklistSchema>;
+export type ChecklistDto = z.infer<typeof checklistInputsSchema>;
 export type ChecklistsDto = z.infer<typeof checklistsSchema>;
 export type UpdateChecklistDto = z.infer<typeof updateChecklistSchema>;

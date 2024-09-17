@@ -23,15 +23,17 @@ import {
 	Textarea,
 } from "@/shared/ui";
 import { Spinner } from "@/shared/components";
-import { IList } from "@/features/lists";
-import { ICard, UpdateCardBaseDto, updateCardSchema, useUpdateCard } from "@/features/cards";
+import { UpdateCardBaseDto, updateCardSchema, useUpdateCard } from "@/features/cards";
+import { useCard } from "../providers/card.provider";
 
-type Props = {
-	listId: IList["id"];
-	card: ICard;
-};
+// type Props = {
+// 	listId: IList["id"];
+// 	card: ICard;
+// };
 
-export const CardBaseForm = ({ listId, card }: Props) => {
+export const CardBaseForm = () => {
+	const { listId, card } = useCard();
+
 	const form = useForm<UpdateCardBaseDto>({
 		resolver: zodResolver(updateCardSchema),
 		defaultValues: {
@@ -46,8 +48,8 @@ export const CardBaseForm = ({ listId, card }: Props) => {
 
 	const handleSubmit = (values: UpdateCardBaseDto) => {
 		mutate({
-			listId: String(listId),
-			cardId: String(card.id),
+			listId,
+			cardId: card.id,
 			values,
 		});
 	};

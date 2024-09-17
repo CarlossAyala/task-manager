@@ -62,7 +62,7 @@ export const ListActions = ({ list }: { list: IList }) => {
 	const handleUpdate = (values: UpdateListDto) => {
 		update.mutate(
 			{
-				listId: String(list.id),
+				listId: list.id,
 				values,
 			},
 			{
@@ -75,7 +75,7 @@ export const ListActions = ({ list }: { list: IList }) => {
 	};
 
 	const handleRemoveList = () => {
-		remove.mutate(String(list.id), {
+		remove.mutate(list.id, {
 			onSuccess() {
 				setModals(null);
 				toast.success("List removed");

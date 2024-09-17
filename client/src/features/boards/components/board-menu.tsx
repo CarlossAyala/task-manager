@@ -20,7 +20,7 @@ const OPTIONS = [
 			value: "board",
 		},
 		menu: {
-			title: "Board settings",
+			title: "Menu",
 			description: "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
 		},
 		isRoot: true,
@@ -33,6 +33,16 @@ const OPTIONS = [
 		menu: {
 			title: "Labels",
 			description: "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
+		},
+	},
+	{
+		tab: {
+			label: "Members",
+			value: "members",
+		},
+		menu: {
+			title: "Members",
+			description: "Add or remove members from the board.",
 		},
 	},
 ];
@@ -76,6 +86,9 @@ export const BoardMenu = () => {
 						</div>
 					</TabsContent>
 					<TabsContent value="labels">
+						<BoardMenuLabels />
+					</TabsContent>
+					<TabsContent value="members">
 						<BoardMenuLabels />
 					</TabsContent>
 				</Tabs>

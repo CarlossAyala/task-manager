@@ -1,29 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Button, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input, Textarea } from "@/shared/ui";
 import { Spinner } from "@/shared/components";
-import { ICard } from "@/features/cards";
-import { IList } from "@/features/lists";
-import { ChecklistDto, checklistSchema, useCreateChecklist } from "@/features/checklists";
+import { ChecklistDto, checklistInputsSchema, useCreateChecklist } from "@/features/checklists";
+import { useCard } from "../providers/card.provider";
 
-type Props = {
-	listId: IList["id"];
-	cardId: ICard["id"];
-};
-
-export const CardChecklistCreateForm = ({ listId, cardId }: Props) => {
-	const [isCreate, setIsCreate] = useState<boolean>(false);
+export const CardChecklistCreateForm = () => {
+	const [isCreateMode, setIsCreateMode] = useState<boolean>(false);
 
 	const form = useForm<ChecklistDto>({
-		resolver: zodResolver(checklistSchema),
+		resolver: zodResolver(checklistInputsSchema),
 		defaultValues: {
 			name: "",
 			description: "",
 		},
 	});
+
+	const { listId, cardId } = useCard();
 
 	const { mutate, isPending } = useCreateChecklist({ listId, cardId });
 
@@ -31,25 +27,27 @@ export const CardChecklistCreateForm = ({ listId, cardId }: Props) => {
 		mutate(values, {
 			onSuccess() {
 				toast.success("Card created successfully");
-				form.reset();
-				setTimeout(() => form.setFocus("name"), 0);
 			},
 		});
 	};
 
 	const handleCreate = () => {
-		setIsCreate(true);
+		setIsCreateMode(true);
 		setTimeout(() => form.setFocus("name"), 0);
 	};
 
 	const handleCancel = () => {
-		setIsCreate(false);
+		setIsCreateMode(false);
 		form.reset();
 	};
 
-	return isCreate ? (
+	useEffect(() => {
+		if (isCreateMode) form.setFocus("name");
+	}, [form, isCreateMode]);
+
+	return isCreateMode ? (
 		<Form {...form}>
-			<form onSubmit={form.handleSubmit(handleSubmit)} className="grid gap-3 border-l-4 border-green-600/20 pl-2">
+			<form onSubmit={form.handleSubmit(handleSubmit)} className="grid gap-3 border-l-4 pl-2">
 				<FormField
 					control={form.control}
 					name="name"
@@ -79,8 +77,8 @@ export const CardChecklistCreateForm = ({ listId, cardId }: Props) => {
 				/>
 
 				<div className="flex justify-end gap-2">
-					<Button type="button" variant="outline" onClick={handleCancel}>
-						Cancel
+					<Button type="button" variant="outline" size="icon" onClick={handleCancel}>
+						<XMarkIcon className="size-5" />
 					</Button>
 					<Button type="submit" disabled={isPending}>
 						Create
